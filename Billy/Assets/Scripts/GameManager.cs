@@ -11,29 +11,28 @@ public class GameManager : MonoBehaviour
 
     public Ball lastBall;
     public GameObject ballPrefab;
-    public Transform ballGroup;
     public GameObject particlePrefab;
+    public GameObject stickParent;
+    public GameObject wall;
+    public Transform ballGroup;
     public Transform particleGroup;
     public Slider slider;
     public Text scoreText;
     public Text powerText;
+    public Text warning;
     public float power;
-    public GameObject stickParent;
-    public GameObject wall;
-
-
+    public float maxPower;
     public int maxLevel;
     public int score;
     public bool isOver;
-    public float maxPower;
     public bool hasPower;
     public bool isHit;
 
     GameObject ballAsGameObject;
     Ball newBall;
-    
-    float holdStartTime;
     Collider collWall;
+
+    float holdStartTime;
     bool canHit;
 
 
@@ -73,6 +72,7 @@ public class GameManager : MonoBehaviour
         ParticleSystem newParticle = particleInstant.GetComponent<ParticleSystem >();
 
         newBall.particle = newParticle;
+        
 
         return newBall;
     }
@@ -89,7 +89,7 @@ public class GameManager : MonoBehaviour
         lastBall = newBall;
         lastBall.manager = this;
         lastBall.stick = stick;
-
+        lastBall.warning = warning;
         lastBall.level = Random.Range(1, maxLevel+1);
         lastBall.gameObject.SetActive(true);
 

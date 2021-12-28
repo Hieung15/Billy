@@ -9,15 +9,18 @@ public class Ball : MonoBehaviour
     
     public Stick stick;
     public GameManager manager;
-    public ParticleSystem particle;
-    public bool isDrag;
-    public int level;
-    public bool isPassed;
-    public bool isCollided;
-
     public Rigidbody rb;
+    public ParticleSystem particle;
     public Vector3 reflectedBall;
     public Vector3 velocity;
+    public Text warning;
+    public int level;
+    public bool isDrag;
+    public bool isPassed;
+    public bool isCollided;
+    
+   
+    
    
     Animator anim;
     Material material;
@@ -40,7 +43,6 @@ public class Ball : MonoBehaviour
         rb = this.GetComponent<Rigidbody>();    
         anim = this.GetComponent<Animator>();
         coll = this.GetComponent<Collider>();
-        //material = GetComponent<Material>();
         material = this.GetComponent<MeshRenderer>().material;
 
         
@@ -54,8 +56,9 @@ public class Ball : MonoBehaviour
         startPos = transform.position;
 
         SetTextrue();
+        SetMass();
 
-        
+
 
     }
 
@@ -65,6 +68,13 @@ public class Ball : MonoBehaviour
         {
             power = manager.power;
 
+        }
+
+        if(transform.position.z > 2)
+        {
+            Vector3 tmp = transform.position;
+            tmp.y = 2f;
+            transform.position = tmp;
         }
 
     }
@@ -143,6 +153,7 @@ public class Ball : MonoBehaviour
     {
         level++;
         SetTextrue();
+        SetMass();
         yield return new WaitForSeconds(0.2f);
         anim.SetInteger("Level", level);
         ParticlePlay();
@@ -169,11 +180,13 @@ public class Ball : MonoBehaviour
         {
             deadTime += Time.deltaTime;
 
-            if(deadTime > 2)
+            if(deadTime > 5)
             {
                 material.color = Color.red;
+                warning.enabled = true;
+                
             }
-            if(deadTime > 5)
+            if(deadTime > 10)
             {
                 manager.GameOver();
             }
@@ -217,15 +230,15 @@ public class Ball : MonoBehaviour
             Debug.DrawLine(hitPos, reflectVec, Color.red, 5, false);
             Debug.DrawLine(startPos, hitPos, Color.blue, 5, false);
             //velocity.z = 0;
-            //Debug.Log("Ball:    " + velocity);
             startPos = transform.position;
-            //Debug.Log("Ball//   power before: " + power);
-            power = power/2;
-            //Debug.Log("Ball//   power after: " + power);
+            Debug.Log("Ball//   power origin: " + manager.power);
+            Debug.Log("Ball//   power before: " + power);
+            power = Mathf.Pow(power, 0.8f);
+            Debug.Log("Ball//   power after: " + power);
+
             //rb.AddForce(velocity * power);
             rb.velocity = velocity*power;
 
-            //Debug.Log("Ball//       velocity " + velocity);
         }
 
         if(collision.collider.tag == "Stick")
@@ -258,7 +271,22 @@ public class Ball : MonoBehaviour
             material.mainTexture = Resources.Load("Textures/4") as Texture;
         else if (level == 5)
             material.mainTexture = Resources.Load("Textures/5") as Texture;
+        else if(level == 6)
+            material.mainTexture = Resources.Load("Textures/6") as Texture;
+        else if (level == 7)
+            material.mainTexture = Resources.Load("Textures/7") as Texture;
+        else if (level == 8)
+            material.mainTexture = Resources.Load("Textures/8") as Texture;
+        else if (level == 9)
+            material.mainTexture = Resources.Load("Textures/9") as Texture;
+        else if (level == 10)
+            material.mainTexture = Resources.Load("Textures/10") as Texture;
 
+    }
+
+    private void SetMass()
+    {
+        rb.mass = level;
     }
 
 }

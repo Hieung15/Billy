@@ -99,14 +99,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stick: {fileID: 0}
   manager: {fileID: 0}
-  particle: {fileID: 0}
-  isDrag: 0
-  level: 0
-  isPassed: 0
-  isCollided: 0
   rb: {fileID: 0}
+  particle: {fileID: 0}
   reflectedBall: {x: 0, y: 0, z: 0}
   velocity: {x: 0, y: 0, z: 0}
+  warning: {fileID: 0}
+  level: 0
+  isDrag: 0
+  isPassed: 0
+  isCollided: 0
 --- !u!95 &5288240646955665722
 Animator:
   serializedVersion: 3
@@ -135,7 +136,7 @@ Rigidbody:
   m_GameObject: {fileID: 5894029029658538960}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0.1
+  m_Drag: 1
   m_AngularDrag: 0.5
   m_UseGravity: 1
   m_IsKinematic: 0
