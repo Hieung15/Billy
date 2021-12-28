@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
+/****************************************/
+// warum der ball 1. schüttert immer nach dem schlagen???
+/****************************************/
+
 public class GameManager : MonoBehaviour
 {
     [SerializeField]
@@ -59,10 +63,11 @@ public class GameManager : MonoBehaviour
         scoreText.text = "Score: " + score.ToString();
         powerText.text = "Power: " + power;
 
+        
 
     }
 
-
+    // to create a Ball as Instance game object and the particle effect.
     Ball GetBall()
     {
         ballAsGameObject = Instantiate(ballPrefab, ballGroup);
@@ -85,14 +90,27 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        // to set the instance ball as last ball which is loaded.
         Ball newBall = GetBall();
         lastBall = newBall;
         lastBall.manager = this;
         lastBall.stick = stick;
         lastBall.warning = warning;
-        lastBall.level = Random.Range(1, maxLevel+1);
-        lastBall.gameObject.SetActive(true);
 
+        if (maxLevel < 6)
+        {
+            lastBall.level = Random.Range(1, maxLevel + 1);
+        }
+        else
+        {
+            lastBall.level = Random.Range(1, 6);
+        }
+        
+        lastBall.gameObject.SetActive(true);
+        
+        Debug.Log("GameManager//    lastBall level: " + lastBall.level);
+        Debug.Log("GameManager//    max level: " + maxLevel);
+        Debug.Log("");
         StartCoroutine(WaitNextBall());
 
         
@@ -177,8 +195,8 @@ public class GameManager : MonoBehaviour
         {
             float holdTime = (Time.time - holdStartTime)*10;
             float holdTimeToPower = Mathf.Clamp(holdTime, 0,100);
-            power = holdTimeToPower*10;
-            slider.value = power/5;
+            power = holdTimeToPower*20;
+            slider.value = power;
         }
 
         if (Input.GetMouseButtonUp(0) && canHit)
@@ -252,8 +270,7 @@ public class GameManager : MonoBehaviour
         moveVec.y = moveVec.y + (stick.transform.localScale.y);
         moveVec.z = newBall.transform.localPosition.z - newBall.transform.localScale.z/2;
         moveVec.x = 0;
-
-        Debug.Log("GameManager//        moveVec.z" + moveVec.z);
+    
         count = 0;
         while (count < 20)
         {
@@ -277,11 +294,11 @@ public class GameManager : MonoBehaviour
         
         //StartCoroutine(ReturnZero());
 
-        //****************** from Ball 3 (2) the hit position of the stick is strange. must be corrected.
-        //****************** sometimes the ball flies.
 
     }
 
+
+    // has problem...
     IEnumerator ReturnZero()
     {
         int count = 0;

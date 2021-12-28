@@ -34,10 +34,11 @@ public class Ball : MonoBehaviour
     float holdStartTime;
     float power;
     float tmp;
-    
+    public int ballLevel;
 
 
-    
+
+
     void Awake()
     {
         rb = this.GetComponent<Rigidbody>();    
@@ -54,10 +55,10 @@ public class Ball : MonoBehaviour
     {
         anim.SetInteger("Level", level);
         startPos = transform.position;
-
+        ballLevel = level;
         SetTextrue();
         SetMass();
-
+        Debug.Log("ball//    Balllevel: " + ballLevel);
 
 
     }
@@ -85,7 +86,7 @@ public class Ball : MonoBehaviour
         {
             Ball otherBall = collision.gameObject.GetComponent<Ball>();
 
-            if(level == otherBall.level && !isMerge && !otherBall.isMerge && level<10)
+            if(ballLevel == otherBall.ballLevel && !isMerge && !otherBall.isMerge && level<10)
             {
                 // 2 Dimension
                 float myX = transform.position.x;
@@ -151,7 +152,20 @@ public class Ball : MonoBehaviour
 
     IEnumerator LevelUpMotion()
     {
-        level++;
+
+        manager.maxLevel = Mathf.Max(level, manager.maxLevel);
+
+        if (manager.maxLevel > 6)
+        {
+            level = 5;
+            ballLevel++;
+        }
+        else
+        {
+            level++;
+            ballLevel++;
+        }
+
         SetTextrue();
         SetMass();
         yield return new WaitForSeconds(0.2f);
@@ -161,7 +175,7 @@ public class Ball : MonoBehaviour
         
 
         /***************************************/
-        manager.maxLevel = Mathf.Max(level, manager.maxLevel);
+        
 
         isMerge = false;
     }
@@ -221,23 +235,26 @@ public class Ball : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         Vector3 hitPos = collision.contacts[0].point;
+        
 
         if (collision.collider.tag == "Wall")
         {
             Vector3 incomingVec = hitPos - startPos;
             Vector3 reflectVec = Vector3.Reflect(incomingVec, collision.contacts[0].normal);
-            velocity = reflectVec.normalized ;
+            reflectVec = reflectVec.normalized ;
             Debug.DrawLine(hitPos, reflectVec, Color.red, 5, false);
             Debug.DrawLine(startPos, hitPos, Color.blue, 5, false);
             //velocity.z = 0;
             startPos = transform.position;
-            Debug.Log("Ball//   power origin: " + manager.power);
-            Debug.Log("Ball//   power before: " + power);
-            power = Mathf.Pow(power, 0.8f);
-            Debug.Log("Ball//   power after: " + power);
 
-            //rb.AddForce(velocity * power);
-            rb.velocity = velocity*power;
+            power = Mathf.Pow(power, 0.8f);
+
+            Vector3 newVelocity = -collision.relativeVelocity; 
+
+
+            float currentPower = rb.velocity.magnitude;
+            rb.velocity = reflectVec * currentPower ;
+            //rb.velocity = velocity*power;
 
         }
 
@@ -248,7 +265,6 @@ public class Ball : MonoBehaviour
             Vector3 incomingVec = hitPos - stickPos;
             velocity = incomingVec.normalized * manager.power;
             rb.velocity = velocity;
-
             
 
             //rb.AddForce(velocity);
@@ -259,27 +275,27 @@ public class Ball : MonoBehaviour
 
     private void SetTextrue()
     {
-        if (level == 1)
+        if (ballLevel == 1 || level == 1)
         {
             material.mainTexture = Resources.Load("Textures/1") as Texture;
         }
-        else if(level == 2)
+        else if(ballLevel == 2 || level == 2)
             material.mainTexture = Resources.Load("Textures/2") as Texture;
-        else if (level == 3)
+        else if (ballLevel == 3 || level == 3)
             material.mainTexture = Resources.Load("Textures/3") as Texture;
-        else if (level == 4)
+        else if (ballLevel == 4 || level == 4)
             material.mainTexture = Resources.Load("Textures/4") as Texture;
-        else if (level == 5)
+        else if (ballLevel == 5 || level == 5)
             material.mainTexture = Resources.Load("Textures/5") as Texture;
-        else if(level == 6)
+        else if(ballLevel == 6 && level == 5)
             material.mainTexture = Resources.Load("Textures/6") as Texture;
-        else if (level == 7)
+        else if (ballLevel == 7 && level == 5)
             material.mainTexture = Resources.Load("Textures/7") as Texture;
-        else if (level == 8)
+        else if (ballLevel == 8 && level == 5)
             material.mainTexture = Resources.Load("Textures/8") as Texture;
-        else if (level == 9)
+        else if (ballLevel == 9 && level == 5)
             material.mainTexture = Resources.Load("Textures/9") as Texture;
-        else if (level == 10)
+        else if (ballLevel == 10 && level == 5)
             material.mainTexture = Resources.Load("Textures/10") as Texture;
 
     }
