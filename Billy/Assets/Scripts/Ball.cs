@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 
 public class Ball : MonoBehaviour
@@ -13,7 +14,7 @@ public class Ball : MonoBehaviour
     public ParticleSystem particle;
     public Vector3 reflectedBall;
     public Vector3 velocity;
-    public Text warning;
+    public TextMeshProUGUI warning;
     public int level;
     public bool isDrag;
     public bool isPassed;
@@ -30,11 +31,14 @@ public class Ball : MonoBehaviour
     
 
     bool isMerge;
+    bool canLevelUp;
     float deadTime;
     float holdStartTime;
     float power;
     float tmp;
+    float stayTime;
     public int ballLevel;
+    
 
 
 
@@ -58,8 +62,6 @@ public class Ball : MonoBehaviour
         ballLevel = level;
         SetTextrue();
         SetMass();
-        Debug.Log("ball//    Balllevel: " + ballLevel);
-
 
     }
 
@@ -71,18 +73,57 @@ public class Ball : MonoBehaviour
 
         }
 
-        if(transform.position.z > 2)
+        //isInside();
+
+        //if (transform.position.z < manager.border.transform.position.z && isCollided && )
+        //{
+        //    canLevelUp = false;
+        //    material.color = Color.red;
+        //    Invoke("WaitToMove", 2.5f);
+        //}
+        //else
+        //    canLevelUp = true;
+
+    }
+
+    void WaitToMove()
+    {
+        manager.GameOver();
+    }
+
+    void isInside()
+    {
+        stayTime += Time.deltaTime;
+        if (transform.position.z < manager.border.transform.position.z+0.1f && isCollided)
         {
-            Vector3 tmp = transform.position;
-            tmp.y = 2f;
-            transform.position = tmp;
+            isMerge = false;
+
+            if (stayTime > 1)
+            {
+                Debug.Log("Ball//   inside");
+                material.color = Color.red;
+                Invoke("WaitToMove", 0.5f);
+                manager.GameOver();
+               
+            }
+
         }
 
+        //if (transform.position.z < manager.border.transform.position.z && isCollided)
+        //{
+        //    canLevelUp = false;
+        //    material.color = Color.red;
+        //    Invoke("WaitToMove", 2.5f);
+        //}
+        //else
+        //    canLevelUp = true;
+
+        
     }
 
     private void OnCollisionStay(Collision collision)
     {
-        if(collision.gameObject.tag == "Ball")
+        if (collision.gameObject.tag == "Ball")
         {
             Ball otherBall = collision.gameObject.GetComponent<Ball>();
 
@@ -104,6 +145,16 @@ public class Ball : MonoBehaviour
         }
     }
 
+    //private void OnCollisionExit(Collision collision)
+    //{
+    //    if(collision.gameObject.tag == "Ground")
+    //    {
+    //        Vector3 tmp = transform.localPosition;
+    //        tmp.y = -1 - transform.localScale.y / 2;
+    //        transform.localPosition = tmp;
+    //    }
+    //}
+
     public void Hide(Vector3 targetPos)
     {
         isMerge = true;
@@ -118,6 +169,8 @@ public class Ball : MonoBehaviour
     IEnumerator HideMotion(Vector3 targetPos)
     {
         int count = 0;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector2.zero;
         while (count < 20)
         {
             count++;
@@ -125,6 +178,7 @@ public class Ball : MonoBehaviour
             if(targetPos != Vector3.up * 100)
             {
                 transform.position = Vector3.Lerp(transform.position, targetPos, 0.2f);
+                
             }
             else if(targetPos == Vector3.up * 100)
             {
@@ -138,6 +192,8 @@ public class Ball : MonoBehaviour
 
         isMerge = false;
         gameObject.SetActive(false);
+       
+        
     }
 
     void LevelUP()
@@ -213,6 +269,7 @@ public class Ball : MonoBehaviour
         {
             deadTime = 0;
             isPassed = true;
+            material.color = Color.white;
             //Debug.Log("Ball//   Enter");
         }
     }
@@ -264,9 +321,10 @@ public class Ball : MonoBehaviour
             stickPos = collision.transform.position;
             Vector3 incomingVec = hitPos - stickPos;
             velocity = incomingVec.normalized * manager.power;
+            velocity.y = 0;
             rb.velocity = velocity;
-            
 
+            //isInside();
             //rb.AddForce(velocity);
 
         }
@@ -302,7 +360,7 @@ public class Ball : MonoBehaviour
 
     private void SetMass()
     {
-        rb.mass = level;
+        rb.mass = level*1.5f;
     }
 
 }

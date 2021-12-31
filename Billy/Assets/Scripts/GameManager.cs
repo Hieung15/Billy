@@ -3,9 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using TMPro;
 
 /****************************************/
-// warum der ball 1. schüttert immer nach dem schlagen???
+// 2. nach Level 6 hat problem mit Material
+// 3. kein Warnungsmessage 
+// 4. power text ----> Done
+// 5. großer Ball sinkt manchmal (1.warum der ball 1. schüttert immer nach dem schlagen???)
+// 6. wenn der Ball immer noch innerhalb der Grenze ist.
+// 7. wenn der Ball ausserhalb des Grounds ist dann Game over
 /****************************************/
 
 public class GameManager : MonoBehaviour
@@ -17,13 +23,12 @@ public class GameManager : MonoBehaviour
     public GameObject ballPrefab;
     public GameObject particlePrefab;
     public GameObject stickParent;
-    public GameObject wall;
+    public GameObject border;
     public Transform ballGroup;
     public Transform particleGroup;
     public Slider slider;
-    public Text scoreText;
-    public Text powerText;
-    public Text warning;
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI warning;
     public float power;
     public float maxPower;
     public int maxLevel;
@@ -34,7 +39,7 @@ public class GameManager : MonoBehaviour
 
     GameObject ballAsGameObject;
     Ball newBall;
-    Collider collWall;
+    Collider collBorder;
 
     float holdStartTime;
     bool canHit;
@@ -47,7 +52,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        collWall = wall.GetComponent<Collider>();
+        collBorder = border.GetComponent<Collider>();
         NextBall();
         maxPower = 100f;
         canHit = true;
@@ -60,10 +65,8 @@ public class GameManager : MonoBehaviour
         Getpower();
         HitBall();
         blockWall();
-        scoreText.text = "Score: " + score.ToString();
-        powerText.text = "Power: " + power;
+        scoreText.text = "SCORE: " + score.ToString();
 
-        
 
     }
 
@@ -107,10 +110,7 @@ public class GameManager : MonoBehaviour
         }
         
         lastBall.gameObject.SetActive(true);
-        
-        Debug.Log("GameManager//    lastBall level: " + lastBall.level);
-        Debug.Log("GameManager//    max level: " + maxLevel);
-        Debug.Log("");
+
         StartCoroutine(WaitNextBall());
 
         
@@ -177,7 +177,7 @@ public class GameManager : MonoBehaviour
     {
         if (newBall.isPassed && !isHit)
         {
-            collWall.isTrigger = false;
+            collBorder.isTrigger = false;
             
         }
     }
@@ -204,7 +204,7 @@ public class GameManager : MonoBehaviour
             HitBall();
             lastBall = null;
             isHit = true;
-            collWall.isTrigger = true;
+            collBorder.isTrigger = true;
             StartCoroutine(powerZero());
             
 
@@ -261,14 +261,10 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        //Vector3 tmp2 = stick.transform.localPosition + goal2;
-        //Vector3 tmp2 = newBall.transform.position;
-        //tmp2.y = newBall.transform.position.y + stick.transform.localScale.y/2;
-        //tmp2.z = newBall.transform.localScale.z;
-
-
-        moveVec.y = moveVec.y + (stick.transform.localScale.y);
-        moveVec.z = newBall.transform.localPosition.z - newBall.transform.localScale.z/2;
+        //moveVec.y = moveVec.y + (stick.transform.localScale.y);
+        moveVec.y = distance - (stick.transform.localScale.y/2);
+        moveVec.z = newBall.transform.localPosition.z;
+        //moveVec.z = newBall.transform.localPosition.z - newBall.transform.localScale.z;
         moveVec.x = 0;
     
         count = 0;
