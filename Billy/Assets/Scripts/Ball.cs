@@ -14,7 +14,7 @@ public class Ball : MonoBehaviour
     public ParticleSystem particle;
     public Vector3 reflectedBall;
     public Vector3 velocity;
-    public TextMeshProUGUI warning;
+    //public TextMeshProUGUI warning;
     public int level;
     public bool isDrag;
     public bool isPassed;
@@ -253,7 +253,7 @@ public class Ball : MonoBehaviour
             if(deadTime > 5)
             {
                 material.color = Color.red;
-                warning.enabled = true;
+                //warning.enabled = true;
                 
             }
             if(deadTime > 10)
@@ -324,7 +324,6 @@ public class Ball : MonoBehaviour
             velocity.y = 0;
             rb.velocity = velocity;
 
-            //isInside();
             //rb.AddForce(velocity);
 
         }

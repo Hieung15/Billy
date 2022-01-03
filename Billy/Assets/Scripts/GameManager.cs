@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     public Transform particleGroup;
     public Slider slider;
     public TextMeshProUGUI scoreText;
-    public TextMeshProUGUI warning;
+    public GameObject Gameover;
     public float power;
     public float maxPower;
     public int maxLevel;
@@ -54,6 +54,7 @@ public class GameManager : MonoBehaviour
     {
         collBorder = border.GetComponent<Collider>();
         NextBall();
+        power = 0.1f;
         maxPower = 100f;
         canHit = true;
         
@@ -98,7 +99,7 @@ public class GameManager : MonoBehaviour
         lastBall = newBall;
         lastBall.manager = this;
         lastBall.stick = stick;
-        lastBall.warning = warning;
+        //lastBall.warning = warning;
 
         if (maxLevel < 6)
         {
@@ -149,8 +150,10 @@ public class GameManager : MonoBehaviour
             return;
 
         isOver = true;
+
         StartCoroutine(GameOverRoutine());
-        
+
+        Gameover.SetActive(true);
     }
 
    
@@ -196,6 +199,10 @@ public class GameManager : MonoBehaviour
             float holdTime = (Time.time - holdStartTime)*10;
             float holdTimeToPower = Mathf.Clamp(holdTime, 0,100);
             power = holdTimeToPower*20;
+            //if(power < 10)
+            //{
+            //    power = 10;
+            //}
             slider.value = power;
         }
 
@@ -261,10 +268,11 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
 
-        //moveVec.y = moveVec.y + (stick.transform.localScale.y);
-        moveVec.y = distance - (stick.transform.localScale.y/2);
-        moveVec.z = newBall.transform.localPosition.z;
-        //moveVec.z = newBall.transform.localPosition.z - newBall.transform.localScale.z;
+        moveVec.y = moveVec.y + (stick.transform.localScale.y);
+        moveVec.z = newBall.transform.localPosition.z - newBall.transform.localScale.z / 2;
+        //moveVec.y = distance - (stick.transform.localScale.y/2);
+        //moveVec.z = newBall.transform.localPosition.z;
+        //moveVec.z = newBall.transform.localPosition.z - newBall.transform.localScale.z/2;
         moveVec.x = 0;
     
         count = 0;
